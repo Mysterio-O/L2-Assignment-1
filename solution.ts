@@ -145,16 +145,16 @@ function getUniqueValues(arr1: UniqueValuesProp, arr2: UniqueValuesProp): Unique
 
 
 
-type DiscountPrice = number | undefined
-
 interface CalculateTotalPriceProps {
     name: string;
     price: number;
     quantity: number;
-    discount?: DiscountPrice;
+    discount?: number;
 }
 
+
 function calculateTotalPrice(input: CalculateTotalPriceProps[]): number {
+    if(input.length === 0) return 0;
     return input.reduce((acc, current) => {
         return acc + (current.quantity * current.price)
     }, 0)
