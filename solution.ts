@@ -24,8 +24,8 @@ function formatValue(value: ComplexValues[keyof ComplexValues]): FormatValues | 
 type GetLength<T> = string | Array<T>
 
 function getLength<T>(input: GetLength<T>): number | undefined {
-    if (Array.isArray(input)) return input.length;
     if (typeof input === 'string') return input.length;
+    if (Array.isArray(input)) return input.length;
 }
 
 
@@ -46,11 +46,10 @@ class Person {
     }
 
     getDetails() {
-        return `Name: ${this.name}, Age: ${this.age}`
+        return `'Name: ${this.name}, Age: ${this.age}'`
     }
 
 }
-
 
 
 
@@ -126,12 +125,18 @@ type UniqueValuesProp = (string | number)[];
 
 function getUniqueValues(arr1: UniqueValuesProp, arr2: UniqueValuesProp): UniqueValuesProp {
     const mutualArray = [...arr1, ...arr2];
+    const alreadySeen: { [key: string]: boolean } = {};
     const newArr: UniqueValuesProp = [];
-    mutualArray.forEach(a => {
-        if (!newArr.includes(a)) {
+
+    for (const a of mutualArray) {
+        const typeOptions = typeof a === 'number' ? 'num:' : 'str:';
+        const key = typeOptions + a;
+        if (!alreadySeen[key]) {
+            alreadySeen[key] = true;
             newArr.push(a)
         }
-    });
+    }
+
     return newArr;
 }
 
@@ -154,8 +159,15 @@ interface CalculateTotalPriceProps {
 
 
 function calculateTotalPrice(input: CalculateTotalPriceProps[]): number {
-    if(input.length === 0) return 0;
     return input.reduce((acc, current) => {
-        return acc + (current.quantity * current.price)
-    }, 0)
-};
+        const currentTotal = current.price * current.quantity;
+        let effectiveTotal = currentTotal;
+
+        if (current.discount && current.discount > 0 && current.discount <= 100) {
+            effectiveTotal = currentTotal * (100 - current.discount) / 100;
+        }
+
+        return acc + effectiveTotal;
+    }, 0);
+}
+
